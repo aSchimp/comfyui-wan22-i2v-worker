@@ -1,0 +1,6 @@
+wan22:
+  base_path: /runpod-volume/wan22/models
+  unet: diffusion_models
+  text_encoders: text_encoders
+  vae: vae
+  loras: /runpod-volume/wan22/loras

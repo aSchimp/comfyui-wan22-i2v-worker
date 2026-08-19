@@ -1,0 +1,3 @@
+requests==2.32.3
+runpod==1.7.9
+Pillow==11.1.0

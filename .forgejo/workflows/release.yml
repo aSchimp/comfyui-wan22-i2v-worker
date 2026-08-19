@@ -1,0 +1,29 @@
+name: release
+on:
+  push:
+    tags: ['v*.*.*']
+jobs:
+  image:
+    runs-on: docker
+    env:
+      FORGEJO_SERVER_URL: ${{ forgejo.server_url }}
+      FORGEJO_REPOSITORY: ${{ forgejo.repository }}
+      FORGEJO_ACTOR: ${{ forgejo.actor }}
+      FORGEJO_TOKEN: ${{ forgejo.token }}
+      FORGEJO_SHA: ${{ forgejo.sha }}
+      FORGEJO_REF: ${{ forgejo.ref }}
+      REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
+      REGISTRY_TOKEN: ${{ secrets.REGISTRY_TOKEN }}
+    steps:
+      - name: Clone tagged source
+        run: |
+          git clone "https://${FORGEJO_ACTOR}:${FORGEJO_TOKEN}@${FORGEJO_SERVER_URL#https://}/${FORGEJO_REPOSITORY}.git" source
+          git -C source checkout --detach "$FORGEJO_SHA"
+      - name: Build and push
+        run: |
+          cd source
+          VERSION="$(cat VERSION)"
+          test "$FORGEJO_REF" = "refs/tags/v$VERSION"
+          printf '%s' "$REGISTRY_TOKEN" | docker login git.spiral42.com -u "$REGISTRY_USER" --password-stdin
+          docker build --build-arg IMAGE_VERSION="$VERSION" -t "git.spiral42.com/golemdev/comfyui-wan22-i2v-worker:$VERSION" .
+          docker push "git.spiral42.com/golemdev/comfyui-wan22-i2v-worker:$VERSION"
