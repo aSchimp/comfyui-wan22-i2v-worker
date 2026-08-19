@@ -17,7 +17,9 @@ jobs:
     steps:
       - name: Clone tagged source
         run: |
-          git clone "https://${FORGEJO_ACTOR}:${FORGEJO_TOKEN}@${FORGEJO_SERVER_URL#https://}/${FORGEJO_REPOSITORY}.git" source
+          REPO_URL="${FORGEJO_SERVER_URL}/${FORGEJO_REPOSITORY}.git"
+          AUTH_URL="$(echo "${REPO_URL}" | sed "s|://|://${FORGEJO_ACTOR}:${FORGEJO_TOKEN}@|")"
+          git clone "${AUTH_URL}" source
           git -C source checkout --detach "$FORGEJO_SHA"
       - name: Build and push
         run: |
