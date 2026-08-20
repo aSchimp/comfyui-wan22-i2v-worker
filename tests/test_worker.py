@@ -47,6 +47,20 @@ def test_pair_shared_markers_and_symlinks(tmp_path):
     escaped = root / "escaped"; escaped.mkdir(); outside = tmp_path / "outside.safetensors"; outside.touch(); (escaped / "part-high.safetensors").symlink_to(outside)
     with pytest.raises(ValueError): handler.discover_lora("escaped", root)
 
+@pytest.mark.parametrize("names", [("part_H", "part_L"), ("model1hi", "model1lo"), ("highX", "low9")])
+def test_generic_lora_markers_resolve(tmp_path, names):
+    root = tmp_path / "loras"; folder = root / "pair"; folder.mkdir(parents=True)
+    for name in names: (folder / f"{name}.safetensors").touch()
+    resolved = handler.discover_lora("pair", root)
+    assert resolved == {"high": f"pair/{names[0]}.safetensors", "low": f"pair/{names[1]}.safetensors"}
+
+@pytest.mark.parametrize("name", ["highland", "lowland", "sushi", "polo"])
+def test_lora_marker_rejects_false_positives(name):
+    assert handler.lora_marker(Path(f"{name}.safetensors")) is None
+
+def test_lora_marker_rejects_ambiguity():
+    with pytest.raises(ValueError): handler.lora_marker(Path("H-L.safetensors"))
+
 def test_exact_fixed_graph_schema_and_lora_order():
     graph = build_workflow(input_name="input.png", output_prefix="out", prompt="p", negative_prompt="n", seed=1, duration=2, width=320, height=240, config=CONFIG, loras=[{"high": "x/a.safetensors", "low": "x/b.safetensors", "high_strength": 1, "low_strength": 0}])
     kinds = {key: value["class_type"] for key, value in graph.items()}

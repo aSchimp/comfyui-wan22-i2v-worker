@@ -87,8 +87,11 @@ def validate(payload: object) -> dict:
 
 def lora_marker(path: Path) -> str | None:
     tokens = re.split(r"[^a-z0-9]+", path.stem.lower())
-    is_high = "highnoise" in tokens or "high" in tokens
-    is_low = "lownoise" in tokens or "low" in tokens
+    stem = path.stem
+    high_prefix = stem[:4].lower() == "high" and len(stem) > 4 and stem[4] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    low_prefix = stem[:3].lower() == "low" and len(stem) > 3 and stem[3] in "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    is_high = "highnoise" in tokens or "high" in tokens or "h" in tokens or any(re.search(r"\dhi$", token) for token in tokens) or high_prefix
+    is_low = "lownoise" in tokens or "low" in tokens or "l" in tokens or any(re.search(r"\dlo$", token) for token in tokens) or low_prefix
     if is_high and is_low: fail()
     if is_high: return "high"
     if is_low: return "low"

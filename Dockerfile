@@ -1,5 +1,5 @@
 FROM nvidia/cuda:12.8.1-cudnn-runtime-ubuntu24.04@sha256:9175fa92f96de35a8cfb9493f0dfcf9435c7a597e9d95ad41d2cae382a95e3f9
-ARG IMAGE_VERSION=0.1.2
+ARG IMAGE_VERSION=0.1.3
 LABEL org.opencontainers.image.source="https://github.com/aschimp/comfyui-wan22-i2v-worker" \
       org.opencontainers.image.version="${IMAGE_VERSION}"
 ENV DEBIAN_FRONTEND=noninteractive PIP_NO_CACHE_DIR=1 PIP_NO_INPUT=1 PYTHONUNBUFFERED=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
