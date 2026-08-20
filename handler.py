@@ -187,7 +187,8 @@ class ComfyClient:
                 LOG.warning("Unable to remove ComfyUI output", exc_info=True)
 
     def _output(self, history: dict, prefix: str) -> Path:
-        videos = history.get("outputs", {}).get(SAVE_NODE, {}).get("videos", [])
+        # ComfyUI's PreviewVideo intentionally uses the legacy "images" UI key.
+        videos = history.get("outputs", {}).get(SAVE_NODE, {}).get("images", [])
         if not isinstance(videos, list) or len(videos) != 1: raise RuntimeError("unexpected output")
         item = videos[0]
         if not isinstance(item, dict) or set(item) - {"filename", "subfolder", "type"} or item.get("type") != "output": raise RuntimeError("unexpected output")

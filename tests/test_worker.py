@@ -63,9 +63,9 @@ def test_exact_fixed_graph_schema_and_lora_order():
 def test_history_output_path_checks(tmp_path):
     output = tmp_path / "output"; output.mkdir(); video = output / "runpod_id_00001_.mp4"; video.write_bytes(b"\0\0\0\x18ftypisom")
     client = handler.ComfyClient(output=output)
-    history = {"outputs": {"94": {"videos": [{"filename": video.name, "subfolder": "", "type": "output"}]}}}
+    history = {"outputs": {"94": {"images": [{"filename": video.name, "subfolder": "", "type": "output"}]}}}
     assert client._output(history, "runpod_id") == video
-    history["outputs"]["94"]["videos"][0]["filename"] = "other.mp4"
+    history["outputs"]["94"]["images"][0]["filename"] = "other.mp4"
     with pytest.raises(RuntimeError): client._output(history, "runpod_id")
 
 def test_cancel_interrupts_dequeues_and_confirms(monkeypatch, tmp_path):
